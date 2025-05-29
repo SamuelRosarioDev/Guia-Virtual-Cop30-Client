@@ -1,5 +1,4 @@
 import { Layout, Menu, theme } from "antd";
-import { Footer } from "antd/es/layout/layout";
 import {
 	UserOutlined,
 	VideoCameraOutlined,
@@ -12,7 +11,7 @@ const items = [
 	{ key: "3", icon: <UploadOutlined />, label: "Upload" },
 ];
 
-const { Header, Sider, Content } = Layout;
+const { Header, Sider, Content, Footer} = Layout;
 
 export function UserLayout({ children }: { children: React.ReactNode }) {
 	const {

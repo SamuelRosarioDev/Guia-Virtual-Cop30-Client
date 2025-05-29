@@ -1,11 +1,10 @@
-import { UserLayout } from "./Layouts/users.layout";
-
+import { RouterProvider } from "react-router-dom";
+import { RoutesSystem } from "./routes/router";
 
 export function App() {
-
 	return (
-        <UserLayout>
-            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Cum iste consectetur, soluta harum aperiam vero dolores minus nulla voluptatibus voluptatem modi, at architecto explicabo deserunt quasi. Eaque, eveniet ducimus? Reprehenderit.
-        </UserLayout>
+		<>
+			<RouterProvider router={RoutesSystem} />
+		</>
 	);
 }
