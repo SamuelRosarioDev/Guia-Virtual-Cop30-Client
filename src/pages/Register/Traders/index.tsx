@@ -1,22 +1,28 @@
-import { Form, Input, Button, Typography, message, Select } from "antd";
-import { ContainerRegister, FormWrapper } from "./styles";
+import { useState, useEffect } from "react";
+import { Form, Input, Button, Typography, Select } from "antd";
+import { ContainerRegister, FormWrapper, Box } from "./styles";
 import { api } from "../../../services/api";
-import { useEffect } from "react";
-import axios from "axios";
+import axios, { type AxiosError } from "axios";
 import { StoreType } from "../../../enum/trader.enum";
+import { showSuccess, showError, showWarning, showLoading, updateToast } from "../../../utils/toastify";
+import { Link } from "react-router-dom";
 
 const { Option } = Select;
 
 export function TraderRegister() {
 	const [form] = Form.useForm();
+	const [userId, setUserId] = useState<string | null>(null);
 
 	useEffect(() => {
 		async function fetchUser() {
 			try {
 				const { data } = await api.get("/auth/me", { withCredentials: true });
-				form.setFieldsValue({ userId: data.idUser });  // seta o idUser no form
-			} catch (error: any) {
-				message.error(error.response?.data.message || "Erro ao buscar usuário");
+				setUserId(data.idUser);
+				form.setFieldsValue({ userId: data.idUser });
+			} catch (error) {
+				const axiosError = error as AxiosError<{ message?: string }>;
+				const errorMessage = axiosError.response?.data?.message ?? "Erro ao buscar usuário";
+				showError(errorMessage);
 			}
 		}
 
@@ -30,25 +36,29 @@ export function TraderRegister() {
 				withCredentials: true,
 			});
 			const data = response.data;
-			message.success(data.message || "Trader registrado com sucesso!");
+			showSuccess(data.message ?? "Trader registrado com sucesso!");
 			form.resetFields();
-		} catch (error: any) {
-			throw new Error(error.response?.data.message);
+		} catch (error) {
+			const axiosError = error as AxiosError<{ message?: string }>;
+			const errorMessage = axiosError.response?.data?.message ?? "Erro ao registrar trader";
+			showError(errorMessage);
 		}
 	};
 
 	const handleCepBlur = async () => {
-		const cep = form.getFieldValue("cep")?.replace(/\D/g, "");  // Remove caracteres não numéricos
+		const cep = form.getFieldValue("cep")?.replace(/\D/g, "");
 		if (cep?.length !== 8) {
-			message.warning("CEP inválido");
+			showWarning("CEP inválido");
 			return;
 		}
+
+		const toastId = showLoading("Buscando endereço...");
 
 		try {
 			const { data } = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
 
 			if (data.erro) {
-				message.error("CEP não encontrado");
+				updateToast(toastId, "CEP não encontrado", "error");
 				return;
 			}
 
@@ -57,10 +67,16 @@ export function TraderRegister() {
 			form.setFieldsValue({
 				address: endereco,
 			});
-		} catch (error) {
-			message.error("Erro ao buscar endereço pelo CEP");
+
+			updateToast(toastId, "Endereço encontrado com sucesso!", "success");
+		} catch {
+			updateToast(toastId, "Erro ao buscar endereço", "error");
 		}
 	};
+
+	if (userId === null) {
+		return <div>Carregando usuário...</div>;
+	}
 
 	return (
 		<ContainerRegister>
@@ -71,41 +87,85 @@ export function TraderRegister() {
 				</Typography.Paragraph>
 
 				<Form form={form} layout="vertical" onFinish={onFinish} size="large">
-					<Form.Item label="Store Name" name="storeName" rules={[{ required: true }]}>
-						<Input placeholder="Enter store name" />
-					</Form.Item>
+					<Box>
+						<Form.Item
+							style={{ width: "100%" }}
+							label="Nome da Loja"
+							name="storeName"
+							rules={[{ required: true }]}
+						>
+							<Input placeholder="Digite o nome da loja" />
+						</Form.Item>
 
-					<Form.Item label="Store Type" name="storeType" rules={[{ required: true }]}>
-						<Select placeholder="Select user type">
-							{Object.values(StoreType).map((type) => (
-								<Option key={type} value={type}>{type}</Option>
-							))}
-						</Select>
-					</Form.Item>
+						<Form.Item
+							style={{ width: "100%" }}
+							label="Tipo de Loja"
+							name="storeType"
+							rules={[{ required: true }]}
+						>
+							<Select placeholder="Selecione o tipo de loja">
+								{Object.values(StoreType).map((type) => (
+									<Option key={type} value={type}>
+										{type}
+									</Option>
+								))}
+							</Select>
+						</Form.Item>
 
-					<Form.Item label="CPF" name="cpf" rules={[{ required: true }]}>
-						<Input placeholder="Enter your CPF" />
-					</Form.Item>
+						<Form.Item
+							style={{ width: "100%" }}
+							label="CPF"
+							name="cpf"
+							rules={[{ required: true }]}
+						>
+							<Input placeholder="Digite seu CPF" />
+						</Form.Item>
+					</Box>
 
-					<Form.Item label="CNPJ" name="cnpj">
-						<Input placeholder="Enter your CNPJ" />
-					</Form.Item>
+					<Box>
+						<Form.Item
+							style={{ width: "100%" }}
+							label="CNPJ"
+							name="cnpj"
+						>
+							<Input placeholder="Digite seu CNPJ" />
+						</Form.Item>
 
-					<Form.Item label="CEP" name="cep" rules={[{ required: true }]}>
-						<Input placeholder="Enter CEP" onBlur={handleCepBlur} />
-					</Form.Item>
+						<Form.Item
+							style={{ width: "100%" }}
+							label="CEP"
+							name="cep"
+							rules={[{ required: true }]}
+						>
+							<Input
+								placeholder="Digite o CEP"
+								onBlur={handleCepBlur}
+							/>
+						</Form.Item>
 
-					<Form.Item label="Address" name="address" rules={[{ required: true }]}>
-						<Input placeholder="Enter store address" readOnly />
-					</Form.Item>
+						<Form.Item
+							style={{ width: "100%" }}
+							label="Endereço"
+							name="address"
+							rules={[{ required: true }]}
+						>
+							<Input placeholder="Endereço da loja" readOnly />
+						</Form.Item>
+					</Box>
 
-					<Form.Item label="User ID" name="userId" rules={[{ required: true }]}>
-						<Input placeholder="Enter your User ID" readOnly />
+					<Form.Item
+						label="User ID"
+						name="userId"
+						rules={[{ required: true }]}
+					>
+						<Input placeholder="Seu ID de usuário" readOnly />
 					</Form.Item>
 
 					<Form.Item>
+						<Typography.Paragraph>Already have an account? <Link to="/log-in">Click here</Link> </Typography.Paragraph>
+
 						<Button type="primary" htmlType="submit" block>
-							Register Trader
+							Registrar Loja
 						</Button>
 					</Form.Item>
 				</Form>

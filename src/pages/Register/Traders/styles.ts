@@ -15,8 +15,8 @@ export const ContainerBox = styled.div`
 
 export const Box = styled.div`
     display: flex;
-    justify-content: center;
-    flex-direction: column;
+    justify-content: flex-start;
+    gap: 0.5rem;
 `;
 
 export const FormWrapper = styled.div`

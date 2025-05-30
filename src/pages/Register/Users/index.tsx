@@ -1,24 +1,44 @@
-import { Form, Input, Button, Select, Typography, message } from "antd";
+import { Form, Input, Button, Select, Typography } from "antd";
 import { ContainerRegister, FormWrapper, Box, ContainerBox } from "./styles";
 import { CountryType, UserType } from "../../../enum/users.enum";
 import { api } from "../../../services/api";
+import { showLoading, updateToast } from "../../../utils/toastify";
+import type { AxiosError } from "axios";
+import { Link } from "react-router-dom";
+
 const { Option } = Select;
 
-export function Register() {
-	const [form] = Form.useForm();
+interface RegisterFormValues {
+	name: string;
+	email: string;
+	password: string;
+	phone: string;
+	country: CountryType;
+	typeUser: UserType;
+}
 
-	const onFinish = async (values: any) => {
+export function Register() {
+	const [form] = Form.useForm<RegisterFormValues>();
+
+	const onFinish = async (values: RegisterFormValues) => {
+		const toastId = showLoading("Registering user...");
 
 		try {
-			const response = await api.post("/users", values, { headers: { "Content-Type": "application/json" } });
-			const data = response.data;
-			message.success(data);
+			const response = await api.post("/users", values, {
+				headers: { "Content-Type": "application/json" },
+			});
+
+			const message = response.data?.message;
+			updateToast(toastId, message, "success");
 			form.resetFields();
 
-		} catch (error: any) {
-			throw new Error(error.response?.data.message);
+		} catch (error) {
+			const axiosError = error as AxiosError<{ message: string }>;
+			const message = axiosError.response?.data?.message ?? "Error serving request";
+			updateToast(toastId, message, axiosError.response?.status === 400 ? "warning" : "error");
 		}
 	};
+
 
 	return (
 		<ContainerRegister>
@@ -37,7 +57,12 @@ export function Register() {
 								<Input placeholder="Enter your email" />
 							</Form.Item>
 
-							<Form.Item label="Password" name="password" rules={[{ required: true }]}>
+							<Form.Item label="Password" name="password" rules={
+								[
+									{ required: true, message: "Password is required" },
+									{ min: 6, message: "Password must be at least 6 characters" }
+								]
+							}>
 								<Input.Password placeholder="Enter your password" />
 							</Form.Item>
 						</Box>
@@ -61,6 +86,8 @@ export function Register() {
 					</ContainerBox>
 
 					<Form.Item>
+						<Typography.Paragraph>Already have an account? <Link to="/log-in">Click here</Link> </Typography.Paragraph>
+
 						<Button type="primary" htmlType="submit" block>
 							Register
 						</Button>
