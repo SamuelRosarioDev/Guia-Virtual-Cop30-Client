@@ -2,9 +2,9 @@ import { useState, useEffect } from "react";
 import { Form, Input, Button, Typography, Select } from "antd";
 import { ContainerRegister, FormWrapper, Box } from "./styles";
 import { api } from "../../../services/api";
-import axios, { type AxiosError } from "axios";
+import axios from "axios";
 import { StoreType } from "../../../enum/trader.enum";
-import { showSuccess, showError, showWarning, showLoading, updateToast } from "../../../utils/toastify";
+import { showSuccess, showError, showLoading, updateToast } from "../../../utils/toastify";
 import { Link } from "react-router-dom";
 
 const { Option } = Select;
@@ -15,14 +15,17 @@ export function TraderRegister() {
 
 	useEffect(() => {
 		async function fetchUser() {
+			const toastId = showLoading("Loading user...");
+
 			try {
-				const { data } = await api.get("/auth/me", { withCredentials: true });
-				setUserId(data.idUser);
-				form.setFieldsValue({ userId: data.idUser });
-			} catch (error) {
-				const axiosError = error as AxiosError<{ message?: string }>;
-				const errorMessage = axiosError.response?.data?.message ?? "Erro ao buscar usuário";
-				showError(errorMessage);
+				const response = await api.get("/auth/me", { withCredentials: true });
+				setUserId(response.data.idUser);
+
+				updateToast(toastId, response.data?.message, "success");
+
+				form.setFieldsValue({ userId: response.data.idUser });
+			} catch (error: any) {
+				showError(error.response?.data?.message);
 			}
 		}
 
@@ -31,47 +34,34 @@ export function TraderRegister() {
 
 	const onFinish = async (values: any) => {
 		try {
-			const response = await api.post("/traders", values, {
+			const response = await api.post("/trader", values, {
 				headers: { "Content-Type": "application/json" },
 				withCredentials: true,
 			});
-			const data = response.data;
-			showSuccess(data.message ?? "Trader registrado com sucesso!");
+			showSuccess(response.data?.message);
 			form.resetFields();
-		} catch (error) {
-			const axiosError = error as AxiosError<{ message?: string }>;
-			const errorMessage = axiosError.response?.data?.message ?? "Erro ao registrar trader";
-			showError(errorMessage);
+		} catch (error: any) {
+			showError(error.response?.data?.message);
 		}
 	};
 
 	const handleCepBlur = async () => {
-		const cep = form.getFieldValue("cep")?.replace(/\D/g, "");
-		if (cep?.length !== 8) {
-			showWarning("CEP inválido");
-			return;
-		}
-
 		const toastId = showLoading("Buscando endereço...");
 
 		try {
-			const { data } = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+			const cep = form.getFieldValue("cep")?.replace(/\D/g, "");
+			
+			const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
 
-			if (data.erro) {
-				updateToast(toastId, "CEP não encontrado", "error");
-				return;
-			}
+			const endereco = `${response.data.logradouro}, ${response.data.bairro}, ${response.data.localidade} - ${response.data.uf}`;
 
-			const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
+			form.setFieldsValue({address: endereco});
 
-			form.setFieldsValue({
-				address: endereco,
-			});
-
-			updateToast(toastId, "Endereço encontrado com sucesso!", "success");
-		} catch {
-			updateToast(toastId, "Erro ao buscar endereço", "error");
+			updateToast(toastId, response.data?.message, "success");
+		} catch (error: any) {
+			updateToast(toastId, error.response?.data?.message, "error");
 		}
+
 	};
 
 	if (userId === null) {

@@ -2,9 +2,8 @@ import { Form, Input, Button, Select, Typography } from "antd";
 import { ContainerRegister, FormWrapper, Box, ContainerBox } from "./styles";
 import { CountryType, UserType } from "../../../enum/users.enum";
 import { api } from "../../../services/api";
-import { showLoading, updateToast } from "../../../utils/toastify";
-import type { AxiosError } from "axios";
-import { Link } from "react-router-dom";
+import { showError, showLoading, updateToast } from "../../../utils/toastify";
+import { Link, useNavigate } from "react-router-dom";
 
 const { Option } = Select;
 
@@ -19,23 +18,22 @@ interface RegisterFormValues {
 
 export function Register() {
 	const [form] = Form.useForm<RegisterFormValues>();
+	const navigate = useNavigate();
 
 	const onFinish = async (values: RegisterFormValues) => {
 		const toastId = showLoading("Registering user...");
 
 		try {
-			const response = await api.post("/users", values, {
+			const response = await api.post("/user", values, {
 				headers: { "Content-Type": "application/json" },
 			});
 
-			const message = response.data?.message;
-			updateToast(toastId, message, "success");
+			updateToast(toastId, response.data?.message, "success");
 			form.resetFields();
+			navigate("/log-in");
 
-		} catch (error) {
-			const axiosError = error as AxiosError<{ message: string }>;
-			const message = axiosError.response?.data?.message ?? "Error serving request";
-			updateToast(toastId, message, axiosError.response?.status === 400 ? "warning" : "error");
+		} catch (error: any) {
+			showError(error.response?.data?.message);
 		}
 	};
 

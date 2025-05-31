@@ -14,9 +14,9 @@ export const ContainerBox = styled.div`
 `;
 
 export const Box = styled.div`
+    gap: 1rem;
     display: flex;
     justify-content: center;
-    flex-direction: column;
 `;
 
 export const FormWrapper = styled.div`
