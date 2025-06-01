@@ -28,7 +28,7 @@ export function Login() {
                 
                 try {
                     await api.get(`/${data.typeUser}/${data.idUser}`, { withCredentials: true });
-                    navigate("/map");
+                    navigate("/dashboard");
                     console.log("User is already a trader, redirecting to map.");
                 } catch {
                     console.log("User is not a trader or hotelier, redirecting to trader/hotalier registration.");
@@ -36,7 +36,7 @@ export function Login() {
                 }
             } else {
                 console.log("User is not a trader or hotelier, redirecting to map.");
-                navigate("/map");
+                navigate("/dashboard");
             }
         } catch (error: any) {
             //emite error do backend

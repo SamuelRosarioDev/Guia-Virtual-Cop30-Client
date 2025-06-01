@@ -19,7 +19,9 @@ export function TraderRegister() {
 
 			try {
 				const response = await api.get("/auth/me", { withCredentials: true });
+				console.log(response.data.idUser);
 				setUserId(response.data.idUser);
+				
 
 				updateToast(toastId, response.data?.message, "success");
 

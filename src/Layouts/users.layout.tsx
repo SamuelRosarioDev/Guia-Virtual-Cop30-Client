@@ -1,14 +1,19 @@
 import { Layout, Menu, theme } from "antd";
 import {
-	UserOutlined,
-	VideoCameraOutlined,
-	UploadOutlined,
+	DashboardOutlined,
+	ProfileOutlined,
+	SearchOutlined,
+	FireFilled,
+	BankFilled
 } from "@ant-design/icons";
+import { Link } from "react-router-dom";
 
 const items = [
-	{ key: "1", icon: <UserOutlined />, label: "User" },
-	{ key: "2", icon: <VideoCameraOutlined />, label: "Video" },
-	{ key: "3", icon: <UploadOutlined />, label: "Upload" },
+	{ key: "1", icon: <DashboardOutlined />, label: <Link to="/dashboard" >Dashboard</Link> },
+	{ key: "2", icon: <ProfileOutlined />, label: <Link to="/profile" >Profile</Link> },
+	{ key: "3", icon: <SearchOutlined />, label: <Link to="/map" >Find no map</Link> },
+	{ key: "4", icon: <FireFilled />, label: <Link to="/events" >Events</Link> },
+	{ key: "5", icon: <BankFilled />, label: <Link to="/banks" >Banks</Link> },
 ];
 
 const { Header, Sider, Content, Footer} = Layout;
@@ -23,7 +28,6 @@ export function UserLayout({ children }: { children: React.ReactNode }) {
 			<Sider
 				breakpoint="lg"
 				collapsedWidth="0"
-				onBreakpoint={(broken) => console.log(broken)}
 				onCollapse={(collapsed, type) => console.log(collapsed, type)}
 			>
 				<div className="demo-logo-vertical" />
