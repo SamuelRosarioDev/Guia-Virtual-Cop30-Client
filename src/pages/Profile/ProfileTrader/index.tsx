@@ -1,7 +1,10 @@
 import { useEffect } from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button, message, Select } from "antd";
 import { api } from "./../../../services/api";
 import type { Trader } from "../../../dtos/traders.dto";
+import { StoreType } from "../../../enum/trader.enum";
+
+const { Option } = Select;
 
 interface ProfileTraderProps {
     infoTrader: Trader;
@@ -20,6 +23,7 @@ export function ProfileTrader({ infoTrader, onFinishEdit }: ProfileTraderProps) 
             await api.put(`/trader/${values.idTrader}`, values);
             message.success("Perfil de lojista atualizado!");
             onFinishEdit();
+            window.location.reload();
         } catch (error) {
             console.error(error);
             message.error("Erro ao atualizar perfil de lojista.");
@@ -35,10 +39,20 @@ export function ProfileTrader({ infoTrader, onFinishEdit }: ProfileTraderProps) 
             </Form.Item>
 
             <Form.Item label="Store Type" name="storeType">
-                <Input />
+                <Select placeholder="Select Store Type">
+                    {Object.values(StoreType).map((type) => (
+                        <Option key={type} value={type}>
+                            {type}
+                        </Option>
+                    ))}
+                </Select>
             </Form.Item>
 
             <Form.Item label="CPF" name="cpf">
+                <Input />
+            </Form.Item>
+
+            <Form.Item label="CEP" name="cep">
                 <Input />
             </Form.Item>
 

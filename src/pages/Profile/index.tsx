@@ -23,7 +23,7 @@ export function Profile() {
             try {
                 const response = await api.get("/auth/me");
                 const userData = response.data;
-
+                
                 if (userData.hotelier) {
                     const hotelier = userData.hotelier.idHotelier;
                     const responseHotelier = await api.get(`/hotelier/${hotelier}`);
@@ -53,6 +53,7 @@ export function Profile() {
         try {
             await api.put(`/user/${values.idUser}`, values);
             message.success("Perfil atualizado com sucesso!");
+            window.location.reload();
         } catch (error) {
             console.error(error);
             message.error("Erro ao atualizar perfil.");
@@ -112,7 +113,7 @@ export function Profile() {
                     onFinish={onFinish}
                     className="max-w-md mx-auto p-4 border rounded shadow"
                 >
-                    <h1 className="text-2xl font-bold mb-4">Perfil</h1>
+                    <h1 className="text-2xl font-bold mb-4">Profile</h1>
 
                     <Form.Item label="Name" name="name">
                         <Input />
@@ -164,7 +165,7 @@ export function Profile() {
 
                 <div>
                     {hasHotelier && infoHotelier && (
-                        <Card title="Registro Hoteleiro" className="max-w-md mx-auto mt-6 shadow rounded border">
+                        <Card title="Registered Hotel" className="max-w-md mx-auto mt-6 shadow rounded border">
                             {isEditingHotelier ? (
                                 <ProfileHotelier infoHotelier={infoHotelier} onFinishEdit={() => setIsEditingHotelier(false)} />
                             ) : (
@@ -189,7 +190,7 @@ export function Profile() {
 
 
                     {hasTrader && infoTrader && (
-                        <Card title="Perfil Comerciante" className="max-w-md mx-auto mt-6 shadow rounded border">
+                        <Card title="Registered Trade" className="max-w-md mx-auto mt-6 shadow rounded border">
                             {isEditingTrader ? (
                                 <ProfileTrader infoTrader={infoTrader} onFinishEdit={() => setIsEditingTrader(false)} />
                             ) : (
@@ -197,6 +198,7 @@ export function Profile() {
                                     <p><strong>Store name:</strong> {infoTrader.storeName}</p>
                                     <p><strong>Store Type:</strong> {infoTrader.storeType}</p>
                                     <p><strong>CEP:</strong> {infoTrader.cep}</p>
+                                    
                                     <Button type="primary" block onClick={() => setIsEditingTrader(true)}>
                                         Editar
                                     </Button>

@@ -5,6 +5,6 @@ export type Hotelier = {
     cnpj: string;
     totalQuantity: number;
     quantityOccupied: number;
-    link: string;
+    linkMap: string;
     address: string;
 }

@@ -5,6 +5,7 @@ export type Trader = {
     storeType: string;
     cpf: string;
     cep: string;
+    linkMap: string;
     address: string;
     cnpj?: string;
 }

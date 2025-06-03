@@ -35,6 +35,8 @@ export function TraderRegister() {
 	}, [form]);
 
 	const onFinish = async (values: any) => {
+		console.log(values);
+		
 		try {
 			const response = await api.post("/trader", values, {
 				headers: { "Content-Type": "application/json" },
@@ -142,6 +144,15 @@ export function TraderRegister() {
 							rules={[{ required: true }]}
 						>
 							<Input placeholder="Endereço da loja" readOnly />
+						</Form.Item>
+						
+						<Form.Item
+							style={{ width: "100%" }}
+							label="Link Map"
+							name="linkMap"
+							rules={[{ required: true }]}
+						>
+							<Input placeholder="iframe da loja" />
 						</Form.Item>
 					</Box>
 

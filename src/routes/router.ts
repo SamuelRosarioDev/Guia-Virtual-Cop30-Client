@@ -8,6 +8,7 @@ import { Home } from "../pages/Home";
 import { HotelierRegister } from "../pages/Register/Hoteliers";
 import { Dashboard } from "../pages/Dashboard";
 import { Profile } from "../pages/Profile";
+import { MapPoints } from "../pages/MapPoints";
 
 export const RoutesSystem = createBrowserRouter([
     { path: "/log-in", element: createElement(Login) },
@@ -18,7 +19,5 @@ export const RoutesSystem = createBrowserRouter([
     { path: "/", element: createElement(Home) },
     { path: "/dashboard", element: createElement(Dashboard) },
     { path: "/Profile", element: createElement(Profile) },
-
-
-    
+    { path: "/mappoints", element: createElement(MapPoints) }
 ])

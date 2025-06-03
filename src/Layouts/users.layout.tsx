@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 const items = [
 	{ key: "1", icon: <DashboardOutlined />, label: <Link to="/dashboard" >Dashboard</Link> },
 	{ key: "2", icon: <ProfileOutlined />, label: <Link to="/profile" >Profile</Link> },
-	{ key: "3", icon: <SearchOutlined />, label: <Link to="/map" >Find no map</Link> },
+	{ key: "3", icon: <SearchOutlined />, label: <Link to="/mappoints" >Find no map</Link> },
 	{ key: "4", icon: <FireFilled />, label: <Link to="/events" >Events</Link> },
 	{ key: "5", icon: <BankFilled />, label: <Link to="/banks" >Banks</Link> },
 ];

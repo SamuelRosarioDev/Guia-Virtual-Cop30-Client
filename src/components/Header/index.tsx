@@ -5,7 +5,7 @@ const { Header: AntHeader } = Layout;
 
 export function Header() {
   const items = [
-    { key: "1", label: <Link to="/map">Map</Link> },
+    { key: "1", label: <Link to="/dashboard">Dashboard</Link> },
     { key: "2", label: <Link to="/log-in">Login</Link> },
     { key: "3", label: <Link to="/register">Register</Link> },
   ];

@@ -63,9 +63,9 @@ export function Home() {
                                 <Button
                                     type="primary"
                                     size="large"
-                                    onClick={() => navigate("/map")}
+                                    onClick={() => navigate("/dashboard")}
                                 >
-                                    Go to the Map
+                                    Go to the Dashboard
                                 </Button>
                             </div>
                         </div>
@@ -98,9 +98,9 @@ export function Home() {
                                 <Button
                                     type="primary"
                                     size="large"
-                                    onClick={() => navigate("/map")}
+                                    onClick={() => navigate("/dashboard")}
                                 >
-                                    Go to the Map
+                                    Go to the Dashboard
                                 </Button>
                             </div>
                         </div>
