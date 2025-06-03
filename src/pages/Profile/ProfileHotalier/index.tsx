@@ -20,6 +20,7 @@ export function ProfileHotelier({ infoHotelier, onFinishEdit }: ProfileHotelierP
             await api.put(`/hotelier/${values.idHotelier}`, values);
             message.success("Perfil de hoteleiro atualizado!");
             onFinishEdit();
+            window.location.reload();
         } catch (error) {
             console.error(error);
             message.error("Erro ao atualizar perfil de hoteleiro.");
@@ -28,7 +29,7 @@ export function ProfileHotelier({ infoHotelier, onFinishEdit }: ProfileHotelierP
 
     return (
         <Form form={form} layout="vertical" onFinish={onFinish} className="mt-6">
-            <h2 className="text-xl font-bold mb-2">Perfil Hoteleiro</h2>
+            <h2>Perfil Hoteleiro</h2>
 
             <Form.Item label="Hotel Name" name="hotelName">
                 <Input />
@@ -47,6 +48,10 @@ export function ProfileHotelier({ infoHotelier, onFinishEdit }: ProfileHotelierP
             </Form.Item>
 
             <Form.Item label="CEP" name="cep">
+                <Input />
+            </Form.Item>
+
+            <Form.Item label="Iframe" name="linkMap">
                 <Input />
             </Form.Item>
 

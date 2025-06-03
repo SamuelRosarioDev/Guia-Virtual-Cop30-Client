@@ -1,54 +1,60 @@
-# React + TypeScript + Vite
+# COP30 Guia Virtual
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Projeto desenvolvido para ajudar visitantes a se locomoverem pela cidade de Belém do Pará durante a COP30, facilitando a localização de comércios, hotéis e outros locais de interesse público por meio de um mapa interativo dinâmico.
 
-Currently, two official plugins are available:
+## Tecnologias
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Backend
+- Node.js, Express, TypeScript
+- Prisma ORM com PostgreSQL
+- Bcrypt para hash de senhas
+- Jsonwebtoken (JWT) para autenticação segura
+- Cookie-parser para gerenciamento de cookies
+- Zod para validação de dados
+- Docker Compose para containerização
 
-## Expanding the ESLint configuration
+### Frontend
+- React com Vite
+- Ant Design (antd) para UI
+- Axios para comunicação HTTP
+- React Router Dom para navegação SPA
+- React Toastify para notificações
+- Styled Components para estilização
+- API ViaCEP para validação de CEP
+- Bun como runtime e gerenciador de pacotes
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+### Ferramentas Auxiliares
+- Beekeeper Studio: gerenciamento e consulta do banco PostgreSQL
+- Docker: criação e orquestração de containers para backend e banco
+- Hoppscotch: ferramenta para testar e consultar APIs
+- draw.io: criação do modelo conceitual do banco de dados e diagramas
+- WSL (Windows Subsystem for Linux): ambiente Linux para executar Docker no Windows
+- Visual Studio Code (VSCode): editor de código para desenvolvimento
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## Arquitetura
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+O backend foi estruturado com base na Clean Architecture, com camadas bem definidas:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- **Repository**: comunicação direta com o banco de dados.
+- **Service**: lógica de negócio e tratamento de erros.
+- **Controller**: recebe as requisições e retorna respostas.
+- **Middleware**: valida autenticação, autorização e cookies JWT.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-})
-```
+## Funcionalidades
+
+- Exibição dinâmica de locais de interesse em mapa interativo.
+- Sistema de autenticação para usuários comuns e administradores.
+- Validação de CEP via API pública ViaCEP.
+- Feedbacks em tempo real para o usuário via notificações.
+- Proteção das rotas via middleware de autenticação.
+
+## Como executar
+
+### Requisitos
+- Docker e Docker Compose instalados
+- Bun instalado (https://bun.sh/)
+- WSL (para usuários Windows, opcional mas recomendado)
+
+### Rodando o backend
+```bash
+docker-compose up

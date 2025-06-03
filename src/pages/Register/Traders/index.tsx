@@ -18,25 +18,18 @@ export function TraderRegister() {
 			const toastId = showLoading("Loading user...");
 
 			try {
-				const response = await api.get("/auth/me", { withCredentials: true });
-				console.log(response.data.idUser);
-				setUserId(response.data.idUser);
-				
-
-				updateToast(toastId, response.data?.message, "success");
-
-				form.setFieldsValue({ userId: response.data.idUser });
+				const { data } = await api.get("/auth/me", { withCredentials: true });
+				setUserId(data.idUser);
+				updateToast(toastId, data?.message, "success");
+				form.setFieldsValue({ userId: data.idUser });
 			} catch (error: any) {
 				showError(error.response?.data?.message);
 			}
 		}
-
 		fetchUser();
 	}, [form]);
 
 	const onFinish = async (values: any) => {
-		console.log(values);
-		
 		try {
 			const response = await api.post("/trader", values, {
 				headers: { "Content-Type": "application/json" },
@@ -54,12 +47,12 @@ export function TraderRegister() {
 
 		try {
 			const cep = form.getFieldValue("cep")?.replace(/\D/g, "");
-			
+
 			const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
 
 			const endereco = `${response.data.logradouro}, ${response.data.bairro}, ${response.data.localidade} - ${response.data.uf}`;
 
-			form.setFieldsValue({address: endereco});
+			form.setFieldsValue({ address: endereco });
 
 			updateToast(toastId, response.data?.message, "success");
 		} catch (error: any) {
@@ -145,7 +138,7 @@ export function TraderRegister() {
 						>
 							<Input placeholder="Endereço da loja" readOnly />
 						</Form.Item>
-						
+
 						<Form.Item
 							style={{ width: "100%" }}
 							label="Link Map"

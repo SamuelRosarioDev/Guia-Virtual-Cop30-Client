@@ -2,8 +2,8 @@ import { useState, useEffect } from "react";
 import { Form, Input, Button, Typography, InputNumber } from "antd";
 import { ContainerRegister, FormWrapper, Box } from "./styles";
 import { api } from "../../../services/api";
-import axios, { type AxiosError } from "axios";
-import { showSuccess, showError, showWarning, showLoading, updateToast } from "../../../utils/toastify";
+import axios from "axios";
+import { showSuccess, showError, showLoading, updateToast } from "../../../utils/toastify";
 import { Link } from "react-router-dom";
 
 export function HotelierRegister() {
@@ -12,14 +12,15 @@ export function HotelierRegister() {
 
     useEffect(() => {
         async function fetchUser() {
+            const toastId = showLoading("Loading user...");
+
             try {
                 const { data } = await api.get("/auth/me", { withCredentials: true });
                 setUserId(data.idUser);
+                updateToast(toastId, data?.message, "success");
                 form.setFieldsValue({ userId: data.idUser });
-            } catch (error) {
-                const axiosError = error as AxiosError<{ message?: string }>;
-                const errorMessage = axiosError.response?.data?.message ?? "Erro ao buscar usuário";
-                showError(errorMessage);
+            } catch (error: any) {
+                showError(error.response?.data?.message);
             }
         }
         fetchUser();
@@ -31,42 +32,28 @@ export function HotelierRegister() {
                 headers: { "Content-Type": "application/json" },
                 withCredentials: true,
             });
-            const data = response.data;
-            showSuccess(data.message ?? "Hotelier registrado com sucesso!");
+            showSuccess(response.data?.message);
             form.resetFields();
-        } catch (error) {
-            const axiosError = error as AxiosError<{ message?: string }>;
-            const errorMessage = axiosError.response?.data?.message ?? "Erro ao registrar hotelier";
-            showError(errorMessage);
+        } catch (error: any) {
+            showError(error.response?.data?.message);;
         }
     };
 
     const handleCepBlur = async () => {
-        const cep = form.getFieldValue("cep")?.replace(/\D/g, "");
-        if (cep?.length !== 8) {
-            showWarning("CEP inválido");
-            return;
-        }
-
         const toastId = showLoading("Buscando endereço...");
 
         try {
-            const { data } = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
+            const cep = form.getFieldValue("cep")?.replace(/\D/g, "");
 
-            if (data.erro) {
-                updateToast(toastId, "CEP não encontrado", "error");
-                return;
-            }
+            const response = await axios.get(`https://viacep.com.br/ws/${cep}/json/`);
 
-            const endereco = `${data.logradouro}, ${data.bairro}, ${data.localidade} - ${data.uf}`;
+            const endereco = `${response.data.logradouro}, ${response.data.bairro}, ${response.data.localidade} - ${response.data.uf}`;
 
-            form.setFieldsValue({
-                address: endereco,
-            });
+            form.setFieldsValue({ address: endereco });
 
-            updateToast(toastId, "Endereço encontrado com sucesso!", "success");
-        } catch {
-            updateToast(toastId, "Erro ao buscar endereço", "error");
+            updateToast(toastId, response.data?.message, "success");
+        } catch (error: any) {
+            updateToast(toastId, error.response?.data?.message, "error");
         }
     };
 
@@ -117,7 +104,6 @@ export function HotelierRegister() {
                             style={{ width: "100%" }}
                             label="CNPJ"
                             name="cnpj"
-                            rules={[{ required: true, pattern: /^\d{14}$/, message: "CNPJ must be 14 digits" }]}
                         >
                             <Input placeholder="Enter the hotel's CNPJ" />
                         </Form.Item>
@@ -142,10 +128,12 @@ export function HotelierRegister() {
                     </Box>
 
                     <Form.Item
-                        label="Website link"
-                        name="link"
+                        style={{ width: "100%" }}
+                        label="Link Map"
+                        name="linkMap"
+                        rules={[{ required: true }]}
                     >
-                        <Input placeholder="Enter the hotel website link" />
+                        <Input placeholder="iframe da loja" />
                     </Form.Item>
 
                     <Form.Item
