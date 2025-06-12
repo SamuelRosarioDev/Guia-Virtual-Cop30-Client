@@ -1,11 +1,12 @@
 import { useEffect, useState } from "react";
 import { api } from "../../services/api";
 import { UserLayout } from "../../Layouts/users.layout";
-import { Input, Button, Form, Select, message, Card, Popconfirm } from "antd";
+import { Input, Button, Form, Select, Card, Popconfirm } from "antd";
 import { CountryType, UserType } from "../../enum/users.enum";
 import type { User } from "../../dtos/users.dto";
 import { ProfileTrader } from "./ProfileTrader";
 import { ProfileHotelier } from "./ProfileHotalier";
+import { showError, showSuccess, showWarning } from "../../utils/toastify";
 
 const { Option } = Select;
 
@@ -17,17 +18,25 @@ export function Profile() {
     const [infoTrader, setInfoTrader] = useState<any>(null);
     const [isEditingHotelier, setIsEditingHotelier] = useState(false);
     const [isEditingTrader, setIsEditingTrader] = useState(false);
+    const [userName, setUserName] = useState<User>();
+    const [userEmail, setUserEmail] = useState<User>();
+    const [userPassword, setUserPassword] = useState<User>();
+    const [userCountry, setUserCountry] = useState<User>();
+    const [userPhone, setUserPhone] = useState<User>();
+    const [userType, setUserType] = useState<User>();
 
     useEffect(() => {
         const fetchUserProfile = async () => {
             try {
                 const response = await api.get("/auth/me");
                 const userData = response.data;
-                
-                if (userData.hotelier) {
-                    const hotelier = userData.hotelier.idHotelier;
-                    const responseHotelier = await api.get(`/hotelier/${hotelier}`);
-                    setInfoHotelier(responseHotelier.data.data);
+                console.log(response);
+
+                const responseHotelier = await api.get("/hotelier/");
+                const userHotelier = responseHotelier.data.data.find((hotel: any) => hotel.userId === userData.idUser);
+
+                if (userHotelier) {
+                    setInfoHotelier(userHotelier);
                 }
 
                 if (userData.trader) {
@@ -36,13 +45,22 @@ export function Profile() {
                     setInfoTrader(responseTrader.data.data);
                 }
 
-                form.setFieldsValue(userData);
+                const { name, email, password, phone, country, typeUser, ...rest } = userData;
+                form.setFieldsValue(rest);
+                
+                setUserName(name)
+                setUserEmail(email)
+                setUserPassword(password)
+                setUserPhone(phone)
+                setUserCountry(country)
+                setUserType(typeUser)
+
 
                 if (userData.typeUser === "HOTELIER") setHasHotelier(true);
                 if (userData.typeUser === "TRADER") setHasTrader(true);
-            } catch (error) {
-                console.error(error);
-                message.error("Erro ao carregar perfil.");
+            } catch (error: any) {
+                showError(error.response?.data?.message);
+
             }
         };
 
@@ -52,55 +70,56 @@ export function Profile() {
     const onFinish = async (values: User) => {
         try {
             await api.put(`/user/${values.idUser}`, values);
-            message.success("Perfil atualizado com sucesso!");
+            showSuccess("Perfil atualizado com sucesso!");
             window.location.reload();
-        } catch (error) {
-            console.error(error);
-            message.error("Erro ao atualizar perfil.");
+        } catch (error: any) {
+            showError(error.response?.data?.message);
+
         }
     };
 
     const deleteHotelier = async () => {
         try {
             await api.delete(`/hotelier/${infoHotelier.idHotelier}`);
-            message.success("Registro Hoteleiro excluído com sucesso!");
+            showSuccess("Registro Hoteleiro excluído com sucesso!");
             setHasHotelier(false);
             setInfoHotelier(null);
-        } catch (error) {
-            console.error(error);
-            message.error("Erro ao excluir registro hoteleiro.");
+        } catch (error: any) {
+            showError(error.response?.data?.message);
+
         }
     };
 
     const deleteTrader = async () => {
         try {
             await api.delete(`/trader/${infoTrader.idTrader}`);
-            message.success("Registro Comerciante excluído com sucesso!");
+            showWarning("Registro Comerciante excluído com sucesso!");
             setHasTrader(false);
             setInfoTrader(null);
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            message.error("Erro ao excluir registro comerciante.");
+            showError(error.response?.data?.message);
         }
     };
 
     const deleteUser = async () => {
         const userId = form.getFieldValue("idUser");
+
         try {
             if (hasHotelier) {
-                message.warning("Exclua primeiro o registro hoteleiro.");
+                showWarning("Exclua primeiro o registro hoteleiro.");
                 return;
             }
             if (hasTrader) {
-                message.warning("Exclua primeiro o registro comerciante.");
+                showWarning("Exclua primeiro o registro comerciante.");
                 return;
             }
+
             await api.delete(`/user/${userId}`);
-            message.success("Usuário excluído com sucesso!");
+            showSuccess("User deleted Sucessiful");
             // Aqui pode redirecionar para tela de login ou home
-        } catch (error) {
-            console.error(error);
-            message.error("Erro ao excluir usuário.");
+        } catch (error: any) {
+            showError(error.response?.data?.message);
         }
     };
 
@@ -115,20 +134,24 @@ export function Profile() {
                 >
                     <h1 className="text-2xl font-bold mb-4">Profile</h1>
 
-                    <Form.Item label="Name" name="name">
-                        <Input />
+                    <Form.Item label={`${userName}`} name="name">
+                        <Input placeholder="new Name"/>
                     </Form.Item>
 
-                    <Form.Item label="Email" name="email">
-                        <Input />
+                    <Form.Item label={`${userEmail}`} name="email">
+                        <Input placeholder="New email" />
                     </Form.Item>
 
-                    <Form.Item label="Phone" name="phone">
-                        <Input />
+                    <Form.Item label={`${userPassword && "**********"}`} name="password">
+                        <Input placeholder="New password" />
                     </Form.Item>
 
-                    <Form.Item label="Country" name="country">
-                        <Select placeholder="Selecione o país">
+                    <Form.Item label={`${userPhone}`} name="phone">
+                        <Input placeholder="New Phone"/>
+                    </Form.Item>
+
+                    <Form.Item label={`${userCountry}`} name="country">
+                        <Select placeholder="Select your new country">
                             {Object.values(CountryType).map((country) => (
                                 <Option key={country} value={country}>
                                     {country}
@@ -137,8 +160,8 @@ export function Profile() {
                         </Select>
                     </Form.Item>
 
-                    <Form.Item label="Type of User" name="typeUser">
-                        <Select placeholder="Selecione o tipo de usuário">
+                    <Form.Item label={`${userType}`} name="typeUser">
+                        <Select placeholder="Select your new type user">
                             {Object.values(UserType).map((type) => (
                                 <Option key={type} value={type}>
                                     {type}
@@ -146,6 +169,8 @@ export function Profile() {
                             ))}
                         </Select>
                     </Form.Item>
+
+
 
                     <Form.Item name="idUser" hidden>
                         <Input type="hidden" />
@@ -198,7 +223,7 @@ export function Profile() {
                                     <p><strong>Store name:</strong> {infoTrader.storeName}</p>
                                     <p><strong>Store Type:</strong> {infoTrader.storeType}</p>
                                     <p><strong>CEP:</strong> {infoTrader.cep}</p>
-                                    
+
                                     <Button type="primary" block onClick={() => setIsEditingTrader(true)}>
                                         Editar
                                     </Button>

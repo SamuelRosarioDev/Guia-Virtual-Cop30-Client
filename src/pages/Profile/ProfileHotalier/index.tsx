@@ -1,7 +1,8 @@
 import { useEffect } from "react";
-import { Form, Input, Button, message } from "antd";
+import { Form, Input, Button, message, InputNumber } from "antd";
 import { api } from "./../../../services/api";
 import type { Hotelier } from "../../../dtos/hoteliers.dto";
+import { showError } from "../../../utils/toastify";
 
 interface ProfileHotelierProps {
     infoHotelier: Hotelier;
@@ -17,13 +18,16 @@ export function ProfileHotelier({ infoHotelier, onFinishEdit }: ProfileHotelierP
 
     const onFinish = async (values: Hotelier) => {
         try {
-            await api.put(`/hotelier/${values.idHotelier}`, values);
+            const auth = await api.get("/auth/me")
+            const userId = auth.data.idUser
+
+            await api.put(`/hotelier/${values.idHotelier}`, { ...values, userId });
             message.success("Perfil de hoteleiro atualizado!");
             onFinishEdit();
             window.location.reload();
-        } catch (error) {
-            console.error(error);
-            message.error("Erro ao atualizar perfil de hoteleiro.");
+        } catch (error: any) {
+            console.log(error);
+            showError(error.response?.data?.message);
         }
     };
 
@@ -36,11 +40,11 @@ export function ProfileHotelier({ infoHotelier, onFinishEdit }: ProfileHotelierP
             </Form.Item>
 
             <Form.Item label="Quantity Occupied" name="quantityOccupied">
-                <Input type="number" />
+                <InputNumber type="number" />
             </Form.Item>
 
             <Form.Item label="Total Quantity" name="totalQuantity">
-                <Input type="number" />
+                <InputNumber type="number" />
             </Form.Item>
 
             <Form.Item label="CNPJ" name="cnpj">
@@ -53,6 +57,13 @@ export function ProfileHotelier({ infoHotelier, onFinishEdit }: ProfileHotelierP
 
             <Form.Item label="Iframe" name="linkMap">
                 <Input />
+            </Form.Item>
+            <Form.Item label="Endereço" name="address" rules={[{ required: true, message: 'Informe o endereço' }]}>
+                <Input />
+            </Form.Item>
+
+            <Form.Item name="userId" hidden>
+                <Input type="hidden" />
             </Form.Item>
 
             <Form.Item name="idHotelier" hidden>

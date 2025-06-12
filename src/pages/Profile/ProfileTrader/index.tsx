@@ -3,6 +3,7 @@ import { Form, Input, Button, message, Select } from "antd";
 import { api } from "./../../../services/api";
 import type { Trader } from "../../../dtos/traders.dto";
 import { StoreType } from "../../../enum/trader.enum";
+import { showError } from "../../../utils/toastify";
 
 const { Option } = Select;
 
@@ -20,13 +21,15 @@ export function ProfileTrader({ infoTrader, onFinishEdit }: ProfileTraderProps) 
 
     const onFinish = async (values: Trader) => {
         try {
-            await api.put(`/trader/${values.idTrader}`, values);
+            const auth = await api.get("/auth/me")
+            const userId = auth.data.idUser
+
+            await api.put(`/trader/${values.idTrader}`, { ...values, userId });
             message.success("Perfil de lojista atualizado!");
             onFinishEdit();
             window.location.reload();
-        } catch (error) {
-            console.error(error);
-            message.error("Erro ao atualizar perfil de lojista.");
+        } catch (error: any) {
+            showError(error.response?.data?.message);
         }
     };
 
@@ -57,6 +60,10 @@ export function ProfileTrader({ infoTrader, onFinishEdit }: ProfileTraderProps) 
             </Form.Item>
 
             <Form.Item label="Address" name="address">
+                <Input />
+            </Form.Item>
+
+            <Form.Item label="Iframe" name="linkMap">
                 <Input />
             </Form.Item>
 

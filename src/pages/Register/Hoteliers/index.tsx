@@ -4,12 +4,12 @@ import { ContainerRegister, FormWrapper, Box } from "./styles";
 import { api } from "../../../services/api";
 import axios from "axios";
 import { showSuccess, showError, showLoading, updateToast } from "../../../utils/toastify";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export function HotelierRegister() {
     const [form] = Form.useForm();
     const [userId, setUserId] = useState<string | null>(null);
-
+    const navigate = useNavigate()
     useEffect(() => {
         async function fetchUser() {
             const toastId = showLoading("Loading user...");
@@ -34,6 +34,7 @@ export function HotelierRegister() {
             });
             showSuccess(response.data?.message);
             form.resetFields();
+            navigate("/dashboard")
         } catch (error: any) {
             showError(error.response?.data?.message);;
         }

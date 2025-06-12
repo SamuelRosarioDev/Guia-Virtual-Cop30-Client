@@ -5,39 +5,33 @@ import { ContainerRegister, FormWrapper } from "./styles";
 import { showSuccess, showError } from "../../utils/toastify";
 
 interface LoginValues {
-  email: string;
-  password: string;
+    email: string;
+    password: string;
 }
 
 export function Login() {
     const [form] = Form.useForm();
     const navigate = useNavigate();
-    
+
     const onFinish = async (values: LoginValues) => {
         try {
             await api.post("/login", values, {
                 headers: { "Content-Type": "application/json" },
                 withCredentials: true,
             });
-            
+
             showSuccess("Login successful!");
 
             const { data } = await api.get("/auth/me", { withCredentials: true });
-
-            if (data.typeUser === "TRADER" || data.typeUser === "HOTELIER") {
-                
-                try {
-                    await api.get(`/${data.typeUser}/${data.idUser}`, { withCredentials: true });
-                    navigate("/dashboard");
-                    console.log("User is already a trader, redirecting to map.");
-                } catch {
-                    console.log("User is not a trader or hotelier, redirecting to trader/hotalier registration.");
-                    navigate(`/register/${data.typeUser.toLowerCase()}`);
-                }
-            } else {
-                console.log("User is not a trader or hotelier, redirecting to map.");
+            console.log(data);
+            if (data.hotelier || data.trader) {
+                console.log("User already registered as hotelier or trader. Redirecting to dashboard.");
                 navigate("/dashboard");
+                return;
             }
+
+            console.log("User is not a hotelier or trader yet. Redirecting to registration.");
+            navigate(`/register/${data.typeUser.toLowerCase()}`);
         } catch (error: any) {
             //emite error do backend
             showError(error.response?.data?.message);
