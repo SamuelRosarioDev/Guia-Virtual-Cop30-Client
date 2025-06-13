@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
 import { Form, Input, Button, Typography, InputNumber } from "antd";
 import { ContainerRegister, FormWrapper, Box } from "./styles";
-import { api } from "../../../services/api";
+import { api } from "../../../../services/api";
 import axios from "axios";
-import { showSuccess, showError, showLoading, updateToast } from "../../../utils/toastify";
+import { showSuccess, showError, showLoading, updateToast } from "../../../../utils/toastify";
 import { Link, useNavigate } from "react-router-dom";
 
 export function HotelierRegister() {

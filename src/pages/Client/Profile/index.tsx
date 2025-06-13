@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { api } from "../../services/api";
-import { UserLayout } from "../../Layouts/users.layout";
+import { api } from "../../../services/api";
+import { UserLayout } from "../../../Layouts/users.layout";
 import { Input, Button, Form, Select, Card, Popconfirm, Space, Row, Col } from "antd";
-import { CountryType, UserType } from "../../enum/users.enum";
-import type { User } from "../../dtos/users.dto";
+import { CountryType, UserType } from "../../../enum/users.enum";
+import type { User } from "../../../dtos/users.dto";
 import { ProfileTrader } from "./ProfileTrader";
 import { ProfileHotelier } from "./ProfileHotalier";
-import { showError, showSuccess, showWarning } from "../../utils/toastify";
+import { showError, showSuccess, showWarning } from "../../../utils/toastify";
 
 const { Option } = Select;
 

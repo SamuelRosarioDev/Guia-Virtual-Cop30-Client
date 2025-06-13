@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
-import { UserLayout } from "../../Layouts/users.layout";
-import { api } from "../../services/api";
+import { UserLayout } from "../../../Layouts/users.layout";
+import { api } from "../../../services/api";
 import { Table } from "antd";
 
 interface Trader {

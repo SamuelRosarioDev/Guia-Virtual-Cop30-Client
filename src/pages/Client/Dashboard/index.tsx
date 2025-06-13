@@ -1,4 +1,4 @@
-import { UserLayout } from "../../Layouts/users.layout";
+import { UserLayout } from "../../../Layouts/users.layout";
 import { Card, Typography, Button, Space, Progress, Statistic, Row, Col } from "antd";
 import { EnvironmentOutlined, CompassOutlined, UserOutlined, ShopOutlined, HomeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";

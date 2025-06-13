@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 import { Form, Input, Button, message, Select } from "antd";
-import { api } from "./../../../services/api";
-import type { Trader } from "../../../dtos/traders.dto";
-import { StoreType } from "../../../enum/trader.enum";
-import { showError } from "../../../utils/toastify";
+import { api } from "../../../../services/api";
+import type { Trader } from "../../../../dtos/traders.dto";
+import { StoreType } from "../../../../enum/trader.enum";
+import { showError } from "../../../../utils/toastify";
 
 const { Option } = Select;
 

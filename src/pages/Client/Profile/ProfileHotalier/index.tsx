@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import { Form, Input, Button, message, InputNumber } from "antd";
-import { api } from "./../../../services/api";
-import type { Hotelier } from "../../../dtos/hoteliers.dto";
-import { showError } from "../../../utils/toastify";
+import { api } from "../../../../services/api";
+import type { Hotelier } from "../../../../dtos/hoteliers.dto";
+import { showError } from "../../../../utils/toastify";
 
 interface ProfileHotelierProps {
     infoHotelier: Hotelier;
